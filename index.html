@@ -1,0 +1,907 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Coach Rob's MVPs - It's in the Culture</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: phone first. One column like a scorebook page; the role switch is pinned on top and, for the coach, the sections sit in a bar at the bottom in thumb reach. From 1100px the column widens, the sections become a row, and player cards become full tables. */
+:root{
+  --bg:#F1F5F2; --surface:#FFFFFF; --ink:#12211B; --muted:#586A61; --line:#D3DCD6; --chip:#E5ECE7;
+  --accent:#1D3F72; --accent-ink:#FFFFFF; --hot:#C2362B;
+  --good:#1B6E42; --good-bg:#DDF0E4; --warn:#855600; --warn-bg:#FBEBC8; --bad:#A9241C; --bad-bg:#FADDDA;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D1512; --surface:#16211C; --ink:#E7EFEA; --muted:#9AABA2; --line:#2B3B33; --chip:#22302A;
+  --accent:#8FB6F0; --accent-ink:#0B1626; --hot:#F0766B;
+  --good:#74D29B; --good-bg:#15382A; --warn:#E8B95A; --warn-bg:#3A2E10; --bad:#F39088; --bad-bg:#40201D;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0D1512; --surface:#16211C; --ink:#E7EFEA; --muted:#9AABA2; --line:#2B3B33; --chip:#22302A;
+  --accent:#8FB6F0; --accent-ink:#0B1626; --hot:#F0766B;
+  --good:#74D29B; --good-bg:#15382A; --warn:#E8B95A; --warn-bg:#3A2E10; --bad:#F39088; --bad-bg:#40201D;
+  color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:560px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:1100px){ .wrap{max-width:1120px} }
+[hidden]{display:none!important}
+button,select,input{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{padding-block:6px}
+.top .wrap{padding-block:10px 8px}
+.bar-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
+.brand{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.02em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.brand small{display:block;margin-top:3px;font-family:var(--body);font-weight:500;font-size:13px;letter-spacing:.03em;text-transform:none;color:var(--muted)}
+.clock{display:flex;align-items:center;gap:8px;min-width:0}
+#clock{font-size:13px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.2}
+#clock small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--chip);padding:4px;border-radius:10px}
+.seg button{border:0;background:transparent;min-height:44px;padding:8px 4px;border-radius:7px;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:12px}
+.who select{flex:1;min-width:0}
+
+main.wrap{display:flex;flex-direction:column;gap:22px;padding-block:18px 28px}
+section{display:flex;flex-direction:column;gap:10px;min-width:0}
+h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.03em;text-transform:uppercase;text-wrap:balance}
+h3{font-size:15px;font-weight:600}
+.sub{font-size:13px;color:var(--muted)}
+/* What just happened, shown where the thumb is, whatever part of the page was tapped. It fades after a few seconds. */
+.msg{position:fixed;z-index:7;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:528px;margin-inline:auto;pointer-events:none;
+  background:var(--good-bg);color:var(--good);border:1px solid currentColor;border-radius:10px;padding:11px 14px;font-weight:600;font-size:14px;box-shadow:0 6px 20px rgb(0 0 0 / .18);animation:toast 6s forwards}
+.has-nav .msg{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+@media (min-width:1100px){ .has-nav .msg{bottom:16px} }
+@keyframes toast{0%,88%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+.msg.warn{background:var(--warn-bg);color:var(--warn)}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;min-height:44px;min-width:44px;padding:8px 12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad)}
+.btn.small{font-size:14px}
+a.btn{display:inline-flex;align-items:center;text-decoration:none;white-space:normal;box-sizing:border-box}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+:is(button,select,input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,input[type=number],input[type=text],input[type=date]{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;min-height:44px;box-sizing:border-box;font-size:16px}
+/* 16px in every field: below that an iPhone zooms the page on focus. */
+input[type=file]{font-size:14px;max-width:100%;min-height:44px}
+input[type=file]::file-selector-button{font:inherit;font-weight:600;min-height:44px;padding:0 12px;margin-right:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:inherit}
+
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.hero-top{display:flex;align-items:center;gap:12px}
+.jersey{flex:none;width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:26px}
+.hero-name{flex:1;min-width:0}
+.hero-name b{display:block;font-size:17px}
+.big{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums;text-align:right}
+.big small{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.split{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.split div{min-width:0;font-size:13px;color:var(--muted)}
+.split b{display:block;font-size:17px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:44px;min-width:44px;padding:6px 14px;cursor:pointer;font-size:14px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chips button.ontrack{border-color:var(--hot)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > select,.row > input[type=text]{flex:1 1 140px}
+
+.list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.item{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .txt{flex:1 1 150px;min-width:0}
+.item > select{flex:1 1 180px}
+.item .txt b{display:block;font-weight:600}
+.item .txt span{font-size:13px;color:var(--muted)}
+.item .acts{display:flex;gap:8px;flex:none;margin-left:auto}
+.item.me{background:var(--chip)}
+.empty{padding:14px 12px;color:var(--muted);font-size:14px}
+.pill{flex:none;font-size:13px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.pill.waiting{background:var(--warn-bg);color:var(--warn)}
+.pill.confirmed,.pill.auto,.pill.approved,.pill.done{background:var(--good-bg);color:var(--good)}
+.pill.vetoed,.pill.dismissed{background:var(--bad-bg);color:var(--bad)}
+.pill.open{background:var(--chip);color:var(--muted)}
+.rank{flex:none;width:22px;font-family:var(--display);font-weight:700;font-size:20px;color:var(--hot);text-align:center}
+.pts{flex:none;font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;text-align:right}
+.pts small{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted)}
+
+/* Coach sections. Phone: a bar pinned to the bottom, four sections and More. PC: a row under the role switch. */
+.nav{position:fixed;inset:auto 0 0 0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav .wrap{position:relative;padding-inline:0}
+.nav-main{display:grid;grid-template-columns:repeat(5,1fr)}
+.nav button{border:0;border-top:3px solid transparent;background:transparent;min-height:56px;min-width:44px;padding:0 2px;font-weight:600;font-size:13px;color:var(--muted);cursor:pointer}
+.nav button[aria-current="page"],.nav button.on{color:var(--ink);border-top-color:var(--hot)}
+.nav-more{position:absolute;inset:auto 0 100% 0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:0 -8px 20px rgb(0 0 0 / .12)}
+.nav-more[data-closed]{display:none}
+.has-nav footer.wrap{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+@media (min-width:1100px){
+  .nav{position:static;border:0;background:transparent;padding:0;margin-top:14px}
+  .nav .wrap{display:flex;flex-wrap:wrap;gap:4px;padding-inline:16px;border-bottom:1px solid var(--line)}
+  .nav-main,.nav-more,.nav-more[data-closed]{position:static;display:flex;gap:4px;border:0;box-shadow:none;background:transparent}
+  .nav-more{order:2}
+  .nav button{min-height:44px;padding:0 14px;font-size:15px;border-top:0;border-bottom:3px solid transparent}
+  .nav button[aria-current="page"]{border-bottom-color:var(--hot)}
+  #tab-more{display:none}
+  .has-nav footer.wrap{padding-bottom:28px}
+}
+.budget{display:flex;align-items:baseline;gap:8px}
+.budget b{font-family:var(--display);font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+
+.titles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.title{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.title h3{font-family:var(--display);font-size:17px;letter-spacing:.03em;text-transform:uppercase}
+.title ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.title li{display:flex;gap:8px;align-items:baseline;font-size:14px}
+.title li i{font-style:normal;font-family:var(--display);font-weight:700;color:var(--hot);width:14px}
+.title li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.title li b{font-variant-numeric:tabular-nums}
+.title .you{border-top:1px solid var(--line);padding-top:6px;font-size:13px;color:var(--muted)}
+
+.prog{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.prog-row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}
+.prog-row .meter{grid-column:1/-1;height:6px;border-radius:3px;background:var(--chip);overflow:hidden}
+.prog-row .meter i{display:block;height:100%;background:var(--good)}
+
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+tr:first-child th{border-top:0;padding:4px 6px}
+th:first-child,td:first-child,th.txt,td.txt{text-align:left}
+th button{border:0;background:transparent;min-height:44px;padding:4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;cursor:pointer;white-space:normal;text-align:inherit;line-height:1.2}
+th[aria-sort] button{color:var(--ink)}
+.held{color:var(--warn);font-size:13px}
+td select{padding:4px 6px}
+/* Phone: a table becomes one card per player, or one ranked list per title. */
+.sortrow{flex-wrap:nowrap}
+.sortrow select{flex:1 1 auto}
+.cards{display:flex;flex-direction:column;gap:8px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pcard-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pcard-top b{font-size:16px;min-width:0;overflow-wrap:anywhere}
+.pcard dl{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+.pcard dl > div{min-width:0}
+.pcard dl.tight{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pcard dl > div.wide{grid-column:1/-1}
+.pcard dt{font-size:13px;color:var(--muted)}
+.pcard dd{margin:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pcard dd select{width:100%}
+.pcard-acts{display:flex;gap:8px;justify-content:flex-end}
+
+.rules{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.rule{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border-top:1px solid var(--line)}
+.rule:first-child{border-top:0}
+.rule label{flex:1 1 130px;min-width:0}
+.rule label span{display:block;font-size:13px;color:var(--muted)}
+.rule input[type=number]{width:92px;text-align:right}
+.rule input[type=text]{flex:1 1 120px;min-width:0}
+.rule.locked{color:var(--muted)}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.form label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted);min-width:0}
+.form .wide{grid-column:1/-1}
+.track{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.track .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.track .nums label{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.track .nums input{width:100%}
+pre.tpl{margin:0;background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:10px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,Menlo,Consolas,monospace}
+.preview{background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.preview ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted)}
+/* Scouting report: a baseball card. Each bar runs 20 to 80 with a mark at 50, average. */
+.scard{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 0 0 3px var(--surface),inset 0 0 0 4px var(--line)}
+.scard-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 8px;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--hot);border-bottom:1px solid var(--line);padding-bottom:8px}
+.scard-head span:last-child{color:var(--muted)}
+.grades{display:grid;gap:12px}
+@media (min-width:700px){ .grades{grid-template-columns:1fr 1fr;gap:12px 22px} }
+.grade-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:600}
+.grade-top b{font-family:var(--display);font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.scale{position:relative;height:8px;border-radius:4px;background:var(--chip);overflow:hidden;margin:5px 0 4px}
+.scale i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.scale::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--ink);opacity:.4}
+.notes{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:10px;font-size:14px}
+footer.wrap{padding-block:0 28px;display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--muted)}
+footer .next{font-size:15px;color:var(--ink);font-weight:500;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+a{color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){ .btn,.seg button,.chips button{transition:background-color .12s,color .12s} }
+</style>
+
+<header class="top" data-frame><div class="wrap">
+  <div class="bar-top">
+    <div class="brand">Coach Rob's MVPs<small>It's in the culture</small></div>
+    <div class="clock"><button class="btn small" id="prev-day" data-a="prevday" aria-label="Back one day">Back</button><span id="clock"></span><button class="btn small" id="next-day" data-a="nextday" aria-label="Forward one day">Next</button></div>
+  </div>
+</div></header>
+<div class="bar" data-frame><div class="wrap">
+  <div class="seg" role="group" aria-label="View as">
+    <button id="role-coach" data-a="role" data-v="coach">Coach</button>
+    <button id="role-parent" data-a="role" data-v="parent">Parent</button>
+    <button id="role-player" data-a="role" data-v="player">Player</button>
+  </div>
+</div></div>
+<div class="wrap" data-frame><div class="who" id="who-row"><label for="who">Viewing as</label><select id="who" data-c="who"></select></div></div>
+<nav class="nav" id="nav" data-nav aria-label="Coach sections" hidden><div class="wrap" id="nav-in"></div></nav>
+
+<main class="wrap" id="app"></main>
+
+<footer class="wrap" data-frame>
+  <p class="next">Tried it? <a class="btn primary" id="to-review" href="https://claude.ai/artifact/No85rKrWkXEJ7BbdgvnDV3" target="_blank" rel="noopener">Tell us what you think in the Plan Review</a></p>
+  <p>Example team and example history. Names are invented. Everything you change is saved only in this browser, so each tester has their own copy.</p>
+  <div><button class="btn small danger" id="reset" data-a="reset">Reset demo</button></div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ================= rules, dates and scoring (pure) ================= */
+const CATS=['Infield','Outfield','Pitching','Catching','Batting','Mental game'];
+const ALIAS={hitting:'Batting',mental:'Mental game','if':'Infield','of':'Outfield',p:'Pitching',c:'Catching'};
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DEFAULT_RULES={workoutPts:10,pogPts:25,culturePts:5,windowHours:48,weeklyBudget:10,capPct:30,nudgeDays:14,maxPerDay:1,backDays:14,weekStart:1,weekName:'start',reward:'',gradeFloor:30,gradeCeil:80,scoutStreak:5,scoutPlanPct:75,scoutTeam:3};
+const DAY=864e5;
+
+// Everything is stored as "days since the season start"; these turn a day number into a date.
+const startMs=S=>{const [y,m,d]=S.start.split('-').map(Number);return Date.UTC(y,m-1,d)};
+const dateOf=(S,d)=>new Date(startMs(S)+d*DAY);
+const isoOf=(S,d)=>dateOf(S,d).toISOString().slice(0,10);
+const short=(S,d)=>{const t=dateOf(S,d);return MON[t.getUTCMonth()]+' '+t.getUTCDate()};
+const dayLabel=(S,d)=>DOW[dateOf(S,d).getUTCDay()]+', '+short(S,d);
+function weekRange(S,d){const back=(dateOf(S,d).getUTCDay()-S.rules.weekStart+7)%7;return {a:d-back,b:d-back+6}}
+const weekLabel=(S,r)=>S.rules.weekName==='end'?'Week ending '+short(S,r.b):'Week of '+short(S,r.a);
+function monthRange(S,d,off){const t=dateOf(S,d),y=t.getUTCFullYear(),m=t.getUTCMonth()+(off||0);
+  return {a:Math.round((Date.UTC(y,m,1)-startMs(S))/DAY),b:Math.round((Date.UTC(y,m+1,0)-startMs(S))/DAY)}}
+const monthLabel=(S,r)=>{const t=dateOf(S,r.a);return MONTHS[t.getUTCMonth()]+' '+t.getUTCFullYear()};
+const inR=(d,r)=>!r||(d>=r.a&&d<=r.b);
+function defaultStart(now){const t=now||new Date(),u=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate());
+  const monday=u-((new Date(u).getUTCDay()+6)%7)*DAY;return new Date(monday-14*DAY).toISOString().slice(0,10)}
+
+const active=S=>S.players.filter(p=>p.active);
+const byId=(S,id)=>S.players.find(p=>p.id===id);
+function workoutStatus(w,S){
+  if(w.decision==='vetoed')return 'vetoed';
+  if(w.decision==='confirmed')return 'confirmed';
+  return (S.now-w.at)*24>=S.rules.windowHours?'auto':'waiting';
+}
+const hoursLeft=(w,S)=>Math.max(0,S.rules.windowHours-(S.now-w.at)*24);
+function countedList(pid,S,r){ // the workouts that count, after the per-day maximum
+  const per={},out=[];
+  for(const w of S.workouts){
+    if(w.p!==pid||!inR(w.at,r))continue;
+    const st=workoutStatus(w,S);if(st!=='confirmed'&&st!=='auto')continue;
+    per[w.at]=(per[w.at]||0)+1;if(per[w.at]<=S.rules.maxPerDay)out.push(w);
+  }
+  return out;
+}
+function score(pid,S,r){ // r = optional {a,b} day range; a range is reported uncapped
+  const R=S.rules,nW=countedList(pid,S,r).length;
+  const nP=S.games.filter(g=>g.pog===pid&&inR(g.day,r)).length;
+  const nC=S.culture.filter(c=>c.p===pid&&inR(c.at,r)).length;
+  const workouts=nW*R.workoutPts,pog=nP*R.pogPts,cultureRaw=nC*R.culturePts,cap=R.capPct/100;
+  const culture=(r||cap>=1)?cultureRaw:Math.min(cultureRaw,Math.floor(cap/(1-cap)*(workouts+pog)));
+  return {nW,nP,nC,workouts,pog,cultureRaw,culture,held:cultureRaw-culture,total:workouts+pog+culture};
+}
+function streaks(pid,S){
+  const days=new Set(countedList(pid,S).map(w=>w.at));
+  let d=S.now;if(!days.has(d))d--;
+  let current=0;while(d>=0&&days.has(d)){current++;d--}
+  let longest=0,run=0;for(let i=0;i<=S.now;i++){if(days.has(i)){run++;if(run>longest)longest=run}else run=0}
+  return {current,longest};
+}
+const typeCount=(pid,S,type,r)=>S.culture.filter(c=>c.p===pid&&c.type===type&&inR(c.at,r)).length;
+const trackOf=(S,p)=>S.tracks.find(t=>t.id===p.track)||S.tracks[0];
+function trackProgress(S,p,r){
+  const t=trackOf(S,p),list=countedList(p.id,S,r),items=[];
+  if(t.any)items.push({label:'Any workout',have:Math.min(list.length,t.any),need:t.any});
+  for(const c of CATS)if(t.per[c])items.push({label:c,have:Math.min(list.filter(w=>w.cat===c).length,t.per[c]),need:t.per[c]});
+  return {track:t,items,done:items.length>0&&items.every(i=>i.have>=i.need)};
+}
+function trackWeeks(S,p,within){ // weeks completed; `within` limits to weeks starting inside a range
+  let n=0;
+  for(let r=weekRange(S,0);r.a<=S.now;r={a:r.a+7,b:r.b+7})if((!within||inR(r.a,within))&&trackProgress(S,p,r).done)n++;
+  return n;
+}
+/* ---------- scouting report: effort on the scouts' 20-80 scale (pure) ----------
+   Each grade is a ratio against a fixed target, so every player can grade high at once.
+   ratio 1.0 (target met) = 60 "Plus"; 0.75 = 50 average; 1.5 or more = 80. Rounded to 5s like a real report.
+   Grades are recognition only: they never touch points or the MVP race. */
+// The coach sets the targets under Rules: a streak of scoutStreak days, the track finished in scoutPlanPct% of weeks,
+// and scoutTeam culture awards or nominations every 4 weeks each grade 60. Floor and ceiling clamp every grade.
+const scoutTargets=S=>{const R=S.rules,n=(v,d)=>Math.max(1,Number(v)||d);
+  return {streak:n(R.scoutStreak,5),plan:Math.min(100,n(R.scoutPlanPct,75))/100,teamPerWeek:n(R.scoutTeam,3)/4}};
+const GRADE_WORDS=[[80,'Elite'],[70,'Plus-plus'],[60,'Plus'],[55,'Above average'],[50,'Average'],[40,'Building'],[0,'Getting started']];
+const gradeWord=g=>GRADE_WORDS.find(([m])=>g>=m)[1];
+const clamp80=v=>Math.min(80,Math.max(20,v));
+const gradeCeil=S=>clamp80(Number(S.rules.gradeCeil)||80);
+const gradeFloor=S=>Math.min(gradeCeil(S),clamp80(Number(S.rules.gradeFloor)||20));
+const toGrade=(ratio,floor,ceil)=>Math.max(floor,Math.min(ceil,Math.round((20+40*ratio)/5)*5));
+const TOOLS=[
+  {k:'work',name:'Work rate',what:'workouts per week against the track',tip:t=>`Add one more workout a week. Your ${t} track is the plan.`},
+  {k:'cons',name:'Consistency',what:'longest workout streak',tip:()=>'Build a streak. A short workout every day keeps it alive.'},
+  {k:'plan',name:'Plan',what:'weeks the track was finished',tip:t=>`Check off every item on your ${t} track before the week ends.`},
+  {k:'team',name:'Teammate',what:'culture awards and nominations that counted',tip:()=>'Pick a teammate up: hustle, encourage, help in the dugout. Nominate someone who does.'}];
+function scouting(S,p){
+  const floor=gradeFloor(S),ceil=gradeCeil(S),T=scoutTargets(S),days=S.now+1,weeks=Math.max(1,days/7),list=countedList(p.id,S),t=trackOf(S,p);
+  const target=Math.max(1,(t.any||0)+Object.values(t.per).reduce((a,b)=>a+b,0));
+  let wk=0,done=0; // finished weeks, plus this week once its track is done
+  for(let r=weekRange(S,0);r.a<=S.now;r={a:r.a+7,b:r.b+7}){const d=trackProgress(S,p,r).done;if(r.b<S.now||d){wk++;if(d)done++}}
+  let planShare=wk?done/wk:0;
+  if(!wk){const cur=trackProgress(S,p,weekRange(S,S.now)).items,need=cur.reduce((a,i)=>a+i.need,0);planShare=need?cur.reduce((a,i)=>a+i.have,0)/need:0}
+  const team=S.culture.filter(c=>c.p===p.id).length+S.noms.filter(n=>n.from===p.id&&n.state==='approved').length;
+  const ratio={work:list.length/weeks/target,cons:streaks(p.id,S).longest/T.streak,plan:planShare/T.plan,team:team/weeks/T.teamPerWeek};
+  const tools=TOOLS.map(x=>({...x,g:toGrade(ratio[x.k],floor,ceil)}));
+  const overall=Math.max(floor,Math.round(tools.reduce((a,x)=>a+x.g,0)/tools.length/5)*5);
+  const best=tools.reduce((a,x)=>x.g>a.g?x:a),next=tools.reduce((a,x)=>x.g<a.g?x:a);
+  return {tools,overall,best,next,track:t.name,pog:S.games.filter(g=>g.pog===p.id).length};
+}
+const budgetUsed=S=>{const r=weekRange(S,S.now);return S.culture.filter(c=>inR(c.at,r)).length};
+const budgetLeft=S=>Math.max(0,S.rules.weeklyBudget-budgetUsed(S));
+const notRecognized=(S,r)=>active(S).filter(p=>!S.culture.some(c=>c.p===p.id&&(r?inR(c.at,r):S.now-c.at<S.rules.nudgeDays)));
+const standings=(S,r)=>active(S).map(p=>({p,s:score(p.id,S,r)})).sort((a,b)=>b.s.total-a.s.total||a.p.name.localeCompare(b.p.name));
+function titles(S,r){ // every way to be celebrated; r = optional period
+  const A=active(S),T=[];
+  T.push({key:'mvp',name:r?'Most points':'Season MVP',unit:'pts',vals:A.map(p=>({p,v:score(p.id,S,r).total}))});
+  T.push({key:'effort',name:'Top effort',unit:'workouts',vals:A.map(p=>({p,v:countedList(p.id,S,r).length}))});
+  if(!r){
+    T.push({key:'streak',name:'Longest streak',unit:'days',vals:A.map(p=>({p,v:streaks(p.id,S).longest}))});
+    T.push({key:'track',name:'Track complete',unit:'weeks',vals:A.map(p=>({p,v:trackWeeks(S,p)}))});
+  }
+  for(const t of S.types.concat('Other')){
+    const vals=A.map(p=>({p,v:typeCount(p.id,S,t,r)}));
+    if(t==='Other'&&!vals.some(x=>x.v))continue;
+    T.push({key:'c:'+t,name:t==='Other'?'Other culture':t+' leader',unit:'awards',vals});
+  }
+  return T;
+}
+function leaders(vals,n){ // top n places, ties share a place
+  const s=vals.filter(x=>x.v>0).sort((a,b)=>b.v-a.v||a.p.name.localeCompare(b.p.name));
+  return s.map(x=>({p:x.p,v:x.v,rank:1+s.filter(y=>y.v>x.v).length})).filter(x=>x.rank<=(n||3));
+}
+
+/* ---------- spreadsheet import (pure) ---------- */
+function parseCsv(text){
+  const rows=[];let row=[],cell='',q=false;text=String(text).replace(/^﻿/,'');
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++}else q=false}else cell+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===','){row.push(cell);cell=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell=''}
+    else cell+=ch}
+  if(cell!==''||row.length){row.push(cell);rows.push(row)}
+  return rows;
+}
+const csvCell=v=>{const s=String(v==null?'':v);return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+const toCsv=rows=>rows.map(r=>r.map(csvCell).join(',')).join('\r\n')+'\r\n';
+function parseDay(v,S){ // a cell -> day number, or null
+  let ms=null,m;
+  if(typeof v==='number'&&v>20000&&v<80000)ms=Date.UTC(1899,11,30)+Math.floor(v+1e-6)*DAY; // Excel serial date; any time of day is dropped
+  else{const s=String(v).trim();
+    if((m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)))ms=Date.UTC(+m[1],+m[2]-1,+m[3]);
+    else if((m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/)))ms=Date.UTC(m[3].length===2?2000+ +m[3]:+m[3],+m[1]-1,+m[2]);
+    else if(/^\d{5}$/.test(s))ms=Date.UTC(1899,11,30)+ +s*DAY}
+  return ms===null||isNaN(ms)?null:Math.round((ms-startMs(S))/DAY);
+}
+const headIndex=rows=>{const H=rows[0].map(h=>String(h).trim().toLowerCase());return names=>H.findIndex(h=>names.includes(h))};
+const blank=r=>!r.some(c=>String(c).trim());
+function findPlayer(S,v){const s=String(v).trim().replace(/^#/,'');if(!s)return null;const A=active(S);
+  return A.find(p=>String(p.num)===s)||A.find(p=>p.name.toLowerCase()===s.toLowerCase())||null}
+function parseWorkouts(rows,S,who){ // who = {role:'coach'} or {role:'parent',pid}
+  const out={ok:[],skipped:[],error:''};
+  if(!rows.length){out.error='The file is empty.';return out}
+  const ci=headIndex(rows),iD=ci(['date']),iP=ci(['player','name','number']),iT=ci(['workout type','type','workout']);
+  if(iD<0||iT<0||(who.role==='coach'&&iP<0)){out.error='The first row needs the column names: Date, '+(who.role==='coach'?'Player, ':'')+'Workout type.';return out}
+  const seen=new Set();
+  rows.slice(1).forEach((r,i)=>{
+    if(blank(r))return;
+    const skip=reason=>{out.skipped.push({line:i+2,reason})};
+    const at=parseDay(r[iD],S);
+    if(at===null)return skip('date "'+r[iD]+'" not understood');
+    if(at<0)return skip('before the season start');
+    if(at>S.now)return skip('date is in the future');
+    if(S.now-at>S.rules.backDays)return skip('older than the '+S.rules.backDays+'-day limit');
+    const pv=iP>=0?String(r[iP]).trim():'';let p=pv?findPlayer(S,pv):null;
+    if(who.role==='parent'){if(pv&&(!p||p.id!==who.pid))return skip('"'+pv+'" is not your child');p=byId(S,who.pid)}
+    if(!p)return skip(pv?'"'+pv+'" is not on the roster':'no player given');
+    const tv=String(r[iT]).trim().toLowerCase(),cat=CATS.find(c=>c.toLowerCase()===tv)||(Object.prototype.hasOwnProperty.call(ALIAS,tv)?ALIAS[tv]:undefined);
+    if(!cat)return skip('workout type "'+r[iT]+'" not recognized');
+    const k=p.id+'|'+at+'|'+cat;
+    if(seen.has(k)||S.workouts.some(w=>w.p===p.id&&w.at===at&&w.cat===cat&&w.decision!=='vetoed'))return skip('already logged');
+    seen.add(k);out.ok.push({p:p.id,cat,at,line:i+2});
+  });
+  return out;
+}
+function parseRoster(rows,S){
+  const out={ok:[],skipped:[],error:''};
+  if(!rows.length){out.error='The file is empty.';return out}
+  const ci=headIndex(rows),iN=ci(['number','#','jersey','no']),iName=ci(['name','player']),iPos=ci(['position','pos']),iPar=ci(['parent']),iSec=ci(['second adult','second']),iTr=ci(['track']);
+  if(iN<0||iName<0){out.error='The first row needs the column names: Number, Name.';return out}
+  const seen=new Set(),cell=(r,i)=>i>=0&&r[i]!=null?String(r[i]).trim():'';
+  rows.slice(1).forEach((r,i)=>{
+    if(blank(r))return;
+    const skip=reason=>{out.skipped.push({line:i+2,reason})};
+    const name=cell(r,iName),num=parseInt(cell(r,iN).replace(/^#/,''),10);
+    if(!name)return skip('no name');
+    if(isNaN(num))return skip('no jersey number');
+    if(seen.has(num))return skip('number '+num+' appears twice');
+    seen.add(num);
+    const m=S.players.find(p=>p.num===num),tn=cell(r,iTr).toLowerCase(),t=tn?S.tracks.find(x=>x.name.toLowerCase()===tn):null;
+    out.ok.push({num,name,pos:cell(r,iPos),adult:cell(r,iPar),second:cell(r,iSec),track:t?t.id:null,match:m?m.id:null,line:i+2});
+  });
+  return out;
+}
+const rosterRows=S=>[['Number','Name','Position','Parent','Second adult','Track']].concat(active(S).slice().sort((a,b)=>a.num-b.num).map(p=>[p.num,p.name,p.pos,p.adult,p.second||'',trackOf(S,p).name]));
+
+function seed(start){
+  let a=7;const rnd=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+  const S={v:2,start:start||defaultStart(),now:14,nextId:1000,workouts:[],culture:[],noms:[],games:[],rules:{...DEFAULT_RULES},
+    types:['Dugout cleanup','Encouragement','Hustle'],
+    tracks:[{id:1,name:'All-around',any:3,per:{}},{id:2,name:'Pitcher',any:0,per:{Pitching:2,'Mental game':1,Batting:1}},
+      {id:3,name:'Catcher',any:0,per:{Catching:2,Batting:1,'Mental game':1}},{id:4,name:'Infield',any:0,per:{Infield:2,Batting:2}},{id:5,name:'Outfield',any:0,per:{Outfield:2,Batting:2}}],
+    ui:{role:'coach',fam:0,player:0,tab:'inbox',cat:'Batting',msg:'',report:{mode:'week',off:0},tables:{}}};
+  const R=[['Mateo Ruiz',7,'SS','Dana Ruiz','',4],['Eli Whitaker',12,'P','Jordan Whitaker','',2],['Caleb Osei',3,'CF','Ama Osei','Kofi Osei',5],
+    ['Noah Lindqvist',21,'C','Erik Lindqvist','',3],['Tyler Banks',9,'1B','Renee Banks','',4],['Jaxon Petrov',15,'3B','Mila Petrov','',4],
+    ['Owen Castellano',2,'2B','Gina Castellano','',4],['Dev Patel',18,'LF','Anika Patel','',5],['Lucas Hargrove',5,'RF','Sam Hargrove','',5],
+    ['Isaiah Monroe',24,'P','Tasha Monroe','',2],['Ben Nakamura',11,'C','Kei Nakamura','',3],['Wyatt Dunne',30,'UT','Pat Dunne','',1]];
+  S.players=R.map((r,i)=>({id:i,name:r[0],num:r[1],pos:r[2],adult:r[3],second:r[4],track:r[5],active:true}));
+  const dil=[.8,.6,.7,.5,.75,.4,.65,.55,.3,.7,.45,.15],id=()=>S.nextId++;
+  for(const p of S.players)for(let d=0;d<14;d++){
+    if(rnd()>=dil[p.id])continue;
+    const mine=Object.keys(trackOf(S,p).per),cat=mine.length&&rnd()<.75?mine[Math.floor(rnd()*mine.length)]:CATS[Math.floor(rnd()*CATS.length)];
+    const w={id:id(),p:p.id,cat,at:d,decision:null,by:null};
+    // Family of player 4 (Tyler) never opens the app: nothing there is ever confirmed by a parent.
+    if(p.id!==4&&(d<13||rnd()<.5)){w.decision='confirmed';w.by='parent'}
+    S.workouts.push(w);
+  }
+  const veto=S.workouts.find(w=>w.p===5&&w.at>3);if(veto){veto.decision='vetoed';veto.by='parent'}
+  S.workouts.push({id:id(),p:0,cat:'Infield',at:14,decision:null,by:null},{id:id(),p:4,cat:'Batting',at:14,decision:null,by:null});
+  const cul=[[0,1,0],[0,4,2],[0,8,1],[0,12,2],[1,3,1],[1,10,0],[2,2,2],[2,9,1],[5,11,0],[6,5,1],[6,8,0],
+    [9,0,2],[9,6,1],[9,13,0],[7,7,2],[10,12,1],[11,2,0],[11,5,0],[11,10,2]];
+  for(const [p,at,b] of cul)S.culture.push({id:id(),p,at,type:S.types[b],note:'',via:'coach'});
+  S.games=[{id:id(),day:2,opp:'Ridgeline Hawks',pog:1},{id:id(),day:6,opp:'Canyon Creek',pog:0},
+    {id:id(),day:9,opp:'Westbrook Bulls',pog:9},{id:id(),day:13,opp:'Lakeside Storm',pog:null}];
+  S.noms=[{id:id(),from:2,to:4,type:'Encouragement',at:13,state:'open'},{id:id(),from:7,to:11,type:'Hustle',at:14,state:'open'}];
+  return S;
+}
+if(typeof module!=='undefined')module.exports={seed,scouting,gradeWord,score,streaks,workoutStatus,countedList,budgetLeft,notRecognized,standings,titles,leaders,weekRange,weekLabel,monthRange,monthLabel,dayLabel,isoOf,trackProgress,trackWeeks,parseCsv,toCsv,parseDay,parseWorkouts,parseRoster,rosterRows,defaultStart,active};
+
+/* ================= page ================= */
+if(typeof document!=='undefined'){
+const KEY='coach-rob-mvp-v2';
+let S=load(),resetArmed=false,EDIT=null,PENDING=null,OPENCOLS='',COPYBOX='',DL=null,NAVOPEN=false;const LAST={};
+const WIDE=window.matchMedia('(min-width:1100px)'); // a PC: full tables and a row of sections
+function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s&&s.v===2&&s.rules&&s.ui&&s.players&&s.tracks){s.rules={...DEFAULT_RULES,...s.rules};return s}}}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+const P=id=>byId(S,id)||{id:-1,name:'Former player',num:'',pos:'',adult:'',second:'',track:0,active:false};
+const first=id=>P(id).name.split(' ')[0];
+const dl=d=>dayLabel(S,d);
+const ago=d=>{const n=S.now-d;return n<0?'on '+dl(d):n===0?'today':n===1?'yesterday':n+' days ago'};
+const PILL={waiting:'Waiting on adult',confirmed:'Confirmed',auto:'Auto-approved',vetoed:'Vetoed',open:'With coach',approved:'Approved',dismissed:'Not this time'};
+const pill=k=>`<span class="pill ${k}">${PILL[k]}</span>`;
+const opts=(arr,sel)=>arr.map(([v,t])=>`<option value="${esc(v)}"${String(v)===String(sel)?' selected':''}>${esc(t)}</option>`).join('');
+const typeOpts=()=>opts(S.types.map(t=>[t,t]));
+const trackOpts=sel=>opts(S.tracks.map(t=>[t.id,t.name]),sel);
+const plural=(n,w)=>n+' '+w+(n===1?'':'s');
+
+/* ---------- sortable, adjustable tables ---------- */
+function tstate(key,def){const T=S.ui.tables||(S.ui.tables={});return T[key]||(T[key]={sort:def.sort,dir:def.dir,hide:[]})}
+const TEXTCOLS=['name','pos','adult','second','track','num'];
+const firstDir=k=>TEXTCOLS.includes(k)?1:-1; // names A to Z, numbers highest first
+const cellHtml=(c,r)=>c.html?c.html(r):esc(c.get(r));
+function tableHtml(key,cols,rows,def){
+  const st=tstate(key,def),shown=cols.filter((c,i)=>i===0||!st.hide.includes(c.k));
+  const sc=cols.find(c=>c.k===st.sort)||cols[0];
+  const sorted=rows.slice().sort((a,b)=>{const x=sc.get(a),y=sc.get(b);return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y)))*st.dir});
+  LAST[key]={cols:shown.filter(c=>!c.noexport),rows:sorted};
+  const pick=OPENCOLS===key?`<div class="chips" role="group" aria-label="Columns to show">${cols.slice(1).filter(c=>!c.noexport).map(c=>`<button id="col-${key}-${esc(c.k)}" data-a="colt" data-t="${key}" data-k="${esc(c.k)}" aria-pressed="${!st.hide.includes(c.k)}">${esc(c.label)}</button>`).join('')}</div>`:'';
+  const tools=`<div class="tools"><button class="btn small" id="cols-${key}" data-a="cols" data-t="${key}" aria-expanded="${OPENCOLS===key}">Columns</button>
+    <button class="btn small" id="tcopy-${key}" data-a="tcopy" data-t="${key}">Copy table</button>${DL?`<button class="btn small" id="tcsv-${key}" data-a="tcsv" data-t="${key}">Download CSV</button>`:''}</div>${pick}`;
+  if(WIDE.matches)return tools+`<div class="scroll"><table><tr>${shown.map(c=>{const on=c.k===sc.k;return `<th class="${c.txt?'txt':''}"${on?` aria-sort="${st.dir>0?'ascending':'descending'}"`:''}>${c.nosort?esc(c.label):`<button id="sort-${key}-${esc(c.k)}" data-a="sort" data-t="${key}" data-k="${esc(c.k)}">${esc(c.label)}${on?(st.dir>0?' ▲':' ▼'):''}</button>`}</th>`}).join('')}</tr>
+  ${sorted.map(r=>`<tr>${shown.map(c=>`<td class="${c.txt?'txt':''}">${cellHtml(c,r)}</td>`).join('')}</tr>`).join('')}</table></div>`;
+  const vals=shown.slice(1).filter(c=>!c.nosort);
+  if(def.rank){ // phone: one title at a time, everyone ranked
+    const tc=vals.includes(sc)?sc:vals.find(c=>c.k===def.sort)||vals[0];
+    if(!tc)return tools+'<div class="empty">Every column is hidden. Use Columns to bring one back.</div>';
+    const R=rows.map(r=>({r,v:tc.get(r)})).sort((x,y)=>y.v-x.v||String(cols[0].get(x.r)).localeCompare(String(cols[0].get(y.r))));
+    return `<div class="chips" role="group" aria-label="Title to rank by">${vals.map(c=>`<button id="rk-${key}-${esc(c.k)}" data-a="pickt" data-t="${key}" data-k="${esc(c.k)}" aria-pressed="${c===tc}">${esc(c.label)}</button>`).join('')}</div>
+      <div class="list">${R.map(x=>`<div class="item"><div class="rank">${R.filter(y=>y.v>x.v).length+1}</div><div class="txt"><b>${esc(cols[0].get(x.r))}</b></div><div class="pts">${esc(x.v)}</div></div>`).join('')}</div>${tools}`;
+  }
+  // phone: one card per player
+  const head=`<div class="row sortrow"><label class="sub" for="sortby-${key}">Sort by</label><select id="sortby-${key}" data-c="sortby" data-t="${key}">${opts([cols[0]].concat(vals).map(c=>[c.k,c.label]),sc.k)}</select>
+    <button class="btn" id="sortdir-${key}" data-a="sortdir" data-t="${key}" aria-label="${st.dir>0?'Lowest first. Tap for highest first':'Highest first. Tap for lowest first'}">${st.dir>0?'▲':'▼'}</button></div>`;
+  const big=sc===cols[0]?shown.find(c=>c.k===def.sort&&c!==cols[0]):shown.includes(sc)?sc:null;
+  return head+`<div class="cards">${sorted.map(r=>{const fields=shown.slice(1).filter(c=>c!==big&&!c.noexport),acts=shown.filter(c=>c.noexport);
+    return `<div class="pcard"><div class="pcard-top"><b>${cellHtml(cols[0],r)}</b>${big?`<span class="pts">${cellHtml(big,r)}<small>${esc(big.label)}</small></span>`:''}</div>
+      ${fields.length?`<dl${fields.length<=3&&fields.every(c=>!c.txt)?' class="tight"':''}>${fields.map(c=>`<div${c.html&&c.txt?' class="wide"':''}><dt>${esc(c.label)}</dt><dd>${cellHtml(c,r)||'&ndash;'}</dd></div>`).join('')}</dl>`:''}
+      ${acts.length?`<div class="pcard-acts">${acts.map(c=>cellHtml(c,r)).join('')}</div>`:''}</div>`}).join('')}</div>${tools}`;
+}
+const tableRows=key=>{const L=LAST[key];return L?[L.cols.map(c=>c.label)].concat(L.rows.map(r=>L.cols.map(c=>c.get(r)))):[]};
+
+/* ---------- shared pieces ---------- */
+function heroHtml(p,sub){const sc=score(p.id,S);
+  return `<div class="hero"><div class="hero-top"><div class="jersey">${esc(p.num)}</div>
+    <div class="hero-name"><b>${esc(p.name)}</b><span class="sub">${sub}</span></div>
+    <div class="big">${sc.total}<small>points</small></div></div>
+    <div class="split"><div><b>${sc.workouts}</b>Workouts</div><div><b>${sc.pog}</b>Player of the game</div><div><b>${sc.culture}</b>Team culture</div></div></div>`}
+function trackHtml(p,whose){const r=weekRange(S,S.now),tp=trackProgress(S,p,r);
+  return `<section><h2>${whose} track this week</h2><div class="prog">
+    <div class="row" style="justify-content:space-between"><b>${esc(tp.track.name)}</b>${tp.done?'<span class="pill done">Complete</span>':`<span class="sub">${esc(weekLabel(S,r))}</span>`}</div>
+    ${tp.items.length?tp.items.map(i=>`<div class="prog-row"><span>${esc(i.label)}</span><span>${i.have} of ${i.need}</span><div class="meter"><i style="width:${Math.round(i.have/i.need*100)}%"></i></div></div>`).join(''):'<span class="sub">This track has no weekly targets yet.</span>'}
+  </div></section>`}
+function scoutCardHtml(p){const sc=scouting(S,p);
+  return `<div class="scard"><div class="scard-head"><span>Scouting report</span><span>${esc(dl(S.now))}</span></div>
+    <div class="hero-top"><div class="jersey">${esc(p.num)}</div><div class="hero-name"><b>${esc(p.name)}</b><span class="sub">${esc(p.pos)} · ${esc(sc.track)} track</span></div>
+      <div class="big">${sc.overall}<small>Overall</small></div></div>
+    <div class="grades">${sc.tools.map(t=>`<div><div class="grade-top"><span>${t.name}</span><b>${t.g}</b></div>
+      <div class="scale" role="img" aria-label="${t.name} ${t.g} of 80, ${gradeWord(t.g)}"><i style="width:${Math.round((t.g-20)/60*100)}%"></i></div>
+      <span class="sub">${gradeWord(t.g)} · ${t.what}</span></div>`).join('')}</div>
+    <div class="notes"><p><b>Best tool:</b> ${sc.best.name}, ${sc.best.g}.</p>${sc.next.g<80?`<p><b>Next step:</b> ${esc(sc.next.tip(sc.track))}</p>`:'<p><b>Next step:</b> Keep it up. Every grade is elite.</p>'}
+      ${sc.pog?`<p><b>Highlights:</b> ${plural(sc.pog,'player of the game')}</p>`:''}</div>
+    <p class="sub">Effort grades on the scouts' 20 to 80 scale, season to date. 50 is average, 60 means the plan was met, 80 is elite. Grades don't change points.</p></div>`}
+function scoutText(p){const sc=scouting(S,p);
+  return [`${p.name} #${p.num} · Scouting report, ${dl(S.now)}`,`Overall: ${sc.overall} (${gradeWord(sc.overall)})`]
+    .concat(sc.tools.map(t=>`${t.name}: ${t.g} (${gradeWord(t.g)})`),'',`Best tool: ${sc.best.name}`,sc.next.g<80?`Next step: ${sc.next.tip(sc.track)}`:'Next step: Keep it up.').join('\n')}
+const scoutPid=()=>{const A=active(S);return P(S.ui.scout).active?S.ui.scout:A.length?A[0].id:-1};
+function titlesHtml(T,meId){
+  return `<div class="titles">${T.map(t=>{const L=leaders(t.vals,3),me=meId==null?null:t.vals.find(x=>x.p.id===meId);
+    return `<div class="title"><h3>${esc(t.name)}</h3>${L.length?`<ol>${L.map(x=>`<li><i>${x.rank}</i><span>${esc(x.p.name)}</span><b>${x.v}</b></li>`).join('')}</ol>`:'<span class="sub">Nobody yet. Be the first.</span>'}
+      ${me?`<div class="you">You: ${me.v} ${t.unit}</div>`:''}</div>`}).join('')}</div>`}
+function importHtml(kind){
+  const P0=PENDING&&PENDING.kind===kind?PENDING:null,xl=!!window.XLSX;
+  let h=`<div class="row"><input type="file" id="file-${kind}" data-file="${kind}" accept=".csv${xl?',.xlsx,.xls':''}" aria-label="Choose a file to import"></div>
+    <p class="sub">${xl?'CSV or Excel.':'CSV only here. Save an Excel sheet as CSV first.'} Nothing is saved until you press Import.</p>`;
+  if(P0){const res=P0.res;
+    h+=`<div class="preview"><b>${esc(P0.file)}</b>${res.error?`<span class="sub">${esc(res.error)}</span>`:`<span>${plural(res.ok.length,'row')} ready, ${res.skipped.length} skipped.</span>`}
+      ${res.skipped.length?`<ul>${res.skipped.slice(0,8).map(s=>`<li>Row ${s.line}: ${esc(s.reason)}</li>`).join('')}${res.skipped.length>8?`<li>and ${res.skipped.length-8} more</li>`:''}</ul>`:''}
+      <div class="row"><button class="btn primary small" id="import-go" data-a="importgo"${res.ok.length?'':' disabled'}>Import ${plural(res.ok.length,'row')}</button><button class="btn small" id="import-cancel" data-a="importcancel">Cancel</button></div></div>`}
+  return h;
+}
+const workoutTemplate=parent=>{const d=isoOf(S,S.now),y=isoOf(S,Math.max(0,S.now-1)),a=active(S);
+  return parent?[['Date','Workout type','Notes'],[d,'Batting','tee work, 50 swings'],[y,'Mental game','']]
+    :[['Date','Player','Workout type','Notes'],[d,a[0]?a[0].name:'Player name','Batting','tee work, 50 swings'],[y,a[1]?a[1].num:'12','Pitching','']]};
+function templateHtml(kind,rows){return `<pre class="tpl" id="tpl-${kind}">${esc(toCsv(rows).trim())}</pre>
+  <div class="tools"><button class="btn small" id="tplcopy-${kind}" data-a="tplcopy" data-k="${kind}">Copy template</button>${DL?`<button class="btn small" id="tpldl-${kind}" data-a="tpldl" data-k="${kind}">Download template</button>`:''}</div>`}
+const TPL={workouts:()=>workoutTemplate(S.ui.role==='parent'),roster:()=>rosterRows(S).slice(0,3)};
+
+/* ---------- player ---------- */
+function playerView(){
+  const p=P(S.ui.player);if(!p.active)return '<div class="empty">No players on the roster yet. Add one under Coach, Roster.</div>';
+  const st=streaks(p.id,S).current,mine=S.workouts.filter(w=>w.p===p.id).sort((a,b)=>b.at-a.at||b.id-a.id).slice(0,6);
+  const today=S.workouts.filter(w=>w.p===p.id&&w.at===S.now&&w.decision!=='vetoed').length;
+  const noms=S.noms.filter(n=>n.from===p.id).sort((a,b)=>b.id-a.id).slice(0,4);
+  const on=Object.keys(trackOf(S,p).per),cats=CATS.filter(c=>on.includes(c)).concat(CATS.filter(c=>!on.includes(c)));
+  return heroHtml(p,`${esc(p.pos)} · ${st?st+'-day streak':'No streak yet'}`)+trackHtml(p,'My')+`
+  <section><h2>My scouting report</h2>${scoutCardHtml(p)}</section>
+  <section><h2>Log a workout</h2>
+    <div class="chips" role="group" aria-label="Workout type">${cats.map(c=>`<button id="cat-${CATS.indexOf(c)}" class="${on.includes(c)?'ontrack':''}" data-a="cat" data-v="${c}" aria-pressed="${S.ui.cat===c}">${c}</button>`).join('')}</div>
+    <div class="row"><button class="btn primary" id="log" data-a="log">Log today's ${esc(S.ui.cat.toLowerCase())} workout</button></div>
+    ${on.length?'<p class="sub">Outlined types are on your track. Any workout still earns points.</p>':''}
+    ${today>=S.rules.maxPerDay?`<p class="sub">You've logged today. Only ${S.rules.maxPerDay} per day counts toward points.</p>`:''}
+  </section>
+  <section><h2>My workouts</h2><div class="list">${mine.length?mine.map(w=>`<div class="item"><div class="txt"><b>${w.cat}</b><span>${dl(w.at)} · ${ago(w.at)}</span></div>${pill(workoutStatus(w,S))}</div>`).join(''):'<div class="empty">Nothing logged yet.</div>'}</div></section>
+  <section><h2>Nominate a teammate</h2><p class="sub">Saw someone pick the team up? Coach reviews every nomination.</p>
+    <div class="row"><select id="nom-to" aria-label="Teammate">${opts(active(S).filter(o=>o.id!==p.id).map(o=>[o.id,o.name]))}</select>
+      <select id="nom-type" aria-label="For">${typeOpts()}</select>
+      <button class="btn" id="nominate" data-a="nominate">Nominate</button></div>
+    ${noms.length?`<div class="list">${noms.map(n=>`<div class="item"><div class="txt"><b>${esc(P(n.to).name)}</b><span>${esc(n.type)} · ${ago(n.at)}</span></div>${pill(n.state)}</div>`).join('')}</div>`:''}
+  </section>
+  <section><h2>Ways to lead</h2>${S.rules.reward?`<p class="sub">This week's top effort earns: ${esc(S.rules.reward)}</p>`:''}
+    ${titlesHtml(titles(S),p.id)}
+    <p class="sub">Every title shows its top three and where you stand. Only the coach sees the full tables.</p></section>`;
+}
+
+/* ---------- parent ---------- */
+function parentView(){
+  const kid=P(S.ui.fam);if(!kid.active)return '<div class="empty">No players on the roster yet.</div>';
+  const all=S.workouts.filter(w=>w.p===kid.id).sort((a,b)=>b.at-a.at||b.id-a.id);
+  const pend=all.filter(w=>workoutStatus(w,S)==='waiting'),hist=all.filter(w=>workoutStatus(w,S)!=='waiting').slice(0,5);
+  const cul=S.culture.filter(c=>c.p===kid.id).sort((a,b)=>b.at-a.at).slice(0,4);
+  const wr=weekRange(S,S.now),mr=monthRange(S,S.now),ws=score(kid.id,S,wr),ms=score(kid.id,S,mr);
+  const line=(lab,s)=>`<div class="item"><div class="txt"><b>${esc(lab)}</b><span>${plural(s.nW,'workout')} · ${plural(s.nC,'culture award')}${s.nP?' · '+plural(s.nP,'player of the game'):''}</span></div><div class="pts">${s.total}</div></div>`;
+  return heroHtml(kid,`Signed in as ${esc(kid.adult||'a parent')}${kid.second?' · '+esc(kid.second)+' can also confirm':''}`)+`
+  <section><h2>Waiting for you</h2>
+    <div class="list">${pend.length?pend.map(w=>`<div class="item"><div class="txt"><b>${w.cat} workout</b><span>Logged ${ago(w.at)} · counts on its own in ${hoursLeft(w,S)} h</span></div>
+      <div class="acts"><button class="btn small primary" id="ok-${w.id}" data-a="confirm" data-id="${w.id}" aria-label="Confirm the ${w.cat} workout logged ${ago(w.at)}">Confirm</button><button class="btn small danger" id="no-${w.id}" data-a="veto" data-id="${w.id}" aria-label="Veto the ${w.cat} workout logged ${ago(w.at)}">Veto</button></div></div>`).join(''):`<div class="empty">Nothing waiting. ${esc(first(kid.id))} is all caught up.</div>`}</div>
+    <p class="sub">If you don't get to it, a workout counts automatically after ${S.rules.windowHours} hours. Veto only if it didn't happen.</p></section>
+  ${trackHtml(kid,esc(first(kid.id))+"'s")}
+  <section><h2>${esc(first(kid.id))}'s scouting report</h2>${scoutCardHtml(kid)}</section>
+  <section><h2>This week and this month</h2><div class="list">${line(weekLabel(S,wr),ws)}${line(monthLabel(S,mr),ms)}</div></section>
+  <section><h2>Recent workouts</h2><div class="list">${hist.length?hist.map(w=>`<div class="item"><div class="txt"><b>${w.cat}</b><span>${dl(w.at)}${w.src==='import'?' · from a spreadsheet':''}</span></div>${pill(workoutStatus(w,S))}</div>`).join(''):'<div class="empty">No workouts yet.</div>'}</div></section>
+  <section><h2>Import from a spreadsheet</h2><p class="sub">Tracking on paper or in a sheet? Upload ${esc(first(kid.id))}'s workouts here. They count as confirmed by you. Dates can go back ${S.rules.backDays} days.</p>
+    ${importHtml('workouts')}${templateHtml('workouts',workoutTemplate(true))}</section>
+  <section><h2>Team culture points</h2><div class="list">${cul.length?cul.map(c=>`<div class="item"><div class="txt"><b>${esc(c.type==='Other'&&c.note?c.note:c.type)}</b><span>${dl(c.at)} · ${c.via==='nomination'?'teammate nomination':'from coach'}</span></div></div>`).join(''):'<div class="empty">None yet this season.</div>'}</div>
+    <p class="sub">The coach awards these. Parents can see them but can't request them.</p></section>`;
+}
+
+/* ---------- coach ---------- */
+function reportData(){
+  const m=S.ui.report||(S.ui.report={mode:'week',off:0});
+  const r=m.mode==='month'?monthRange(S,S.now,m.off):weekRange(S,S.now+m.off*7);
+  const label=m.mode==='month'?monthLabel(S,r):weekLabel(S,r)+' ('+short(S,r.a)+' to '+short(S,r.b)+')';
+  const rows=active(S).map(p=>{const s=score(p.id,S,r),tp=m.mode==='week'?trackProgress(S,p,r):null;
+    return {p,s,trackText:tp?(tp.done?'Done':tp.items.reduce((a,i)=>a+i.have,0)+' of '+tp.items.reduce((a,i)=>a+i.need,0)):plural(trackWeeks(S,p,r),'week'),done:tp?tp.done:false}});
+  return {m,r,label,rows,T:titles(S,r),nr:notRecognized(S,r)};
+}
+function reportText(){
+  const D=reportData(),L=["Coach Rob's MVPs: "+D.label,''];
+  for(const t of D.T){const top=leaders(t.vals,3);if(top.length)L.push(t.name+': '+top.map(x=>x.p.name+' ('+x.v+')').join(', '))}
+  if(D.m.mode==='week'){const done=D.rows.filter(x=>x.done);if(done.length)L.push('Completed their track: '+done.map(x=>x.p.name).join(', '))}
+  if(S.rules.reward)L.push('Top effort earns: '+S.rules.reward);
+  const tot=D.rows.reduce((a,x)=>({w:a.w+x.s.nW,p:a.p+x.s.nP,c:a.c+x.s.nC}),{w:0,p:0,c:0});
+  L.push('',`Team: ${plural(tot.w,'workout')}, ${plural(tot.c,'culture award')}, ${plural(tot.p,'player of the game')}`);
+  return L.join('\n');
+}
+function coachView(){
+  const left=budgetLeft(S),tab=S.ui.tab;let body='';
+  if(tab==='inbox'){
+    const wait=S.workouts.filter(w=>P(w.p).active&&workoutStatus(w,S)==='waiting').sort((a,b)=>a.at-b.at);
+    const noms=S.noms.filter(n=>n.state==='open'&&P(n.to).active);
+    const never=pid=>!S.workouts.some(w=>w.p===pid&&w.by==='parent');
+    body=`<section><h2>Waiting on a parent</h2>
+      <div class="list">${wait.length?wait.map(w=>`<div class="item"><div class="txt"><b>${esc(P(w.p).name)} · ${w.cat}</b><span>Logged ${ago(w.at)} · ${esc(P(w.p).adult||'no parent yet')}${never(w.p)?' has never confirmed':''}</span></div>
+        <div class="acts"><button class="btn small primary" id="cc-${w.id}" data-a="coachconfirm" data-id="${w.id}" aria-label="Confirm ${esc(P(w.p).name)}, ${w.cat}">Confirm</button></div></div>`).join(''):'<div class="empty">No workouts are waiting.</div>'}</div>
+      <p class="sub">These count on their own after ${S.rules.windowHours} hours. Confirm here to count them now.</p></section>
+    <section><h2>Teammate nominations</h2>
+      <div class="list">${noms.length?noms.map(n=>`<div class="item"><div class="txt"><b>${esc(P(n.to).name)} · ${esc(n.type)}</b><span>From ${esc(P(n.from).name)}, ${ago(n.at)}</span></div>
+        <div class="acts"><button class="btn small primary" id="na-${n.id}" data-a="nomok" data-id="${n.id}" aria-label="Approve ${esc(P(n.to).name)}, ${esc(n.type)}"${left?'':' disabled'}>Approve</button><button class="btn small" id="nd-${n.id}" data-a="nomno" data-id="${n.id}" aria-label="Dismiss ${esc(P(n.to).name)}, ${esc(n.type)}">Dismiss</button></div></div>`).join(''):'<div class="empty">No open nominations.</div>'}</div>
+      <p class="sub">Approving uses one of this week's culture awards (${left} left).</p></section>
+    <section><h2>Import workouts</h2><p class="sub">One row per workout, for any player. Imported rows count as confirmed by you. Dates can go back ${S.rules.backDays} days.</p>
+      ${importHtml('workouts')}${templateHtml('workouts',workoutTemplate(false))}</section>`;
+  }else if(tab==='award'){
+    const nr=notRecognized(S);
+    body=`<section><h2>Award a culture point</h2>
+      <div class="budget"><b>${left}</b><span class="sub">of ${S.rules.weeklyBudget} awards left, ${esc(weekLabel(S,weekRange(S,S.now)).toLowerCase())}</span></div>
+      <div class="row"><select id="award-player" aria-label="Player">${opts(active(S).map(p=>[p.id,p.name]),S.ui.awardTo)}</select>
+        <select id="award-type" aria-label="For">${typeOpts()}</select></div>
+      <div class="row"><input type="text" id="award-custom" maxlength="40" placeholder="Or a one-off reason (counts as Other)" aria-label="One-off reason">
+        <button class="btn primary" id="award" data-a="award"${left?'':' disabled'}>Award ${S.rules.culturePts} points</button></div></section>
+    <section><h2>Not yet recognized</h2><p class="sub">No culture point in the last ${S.rules.nudgeDays} days.</p>
+      <div class="list">${nr.length?nr.map(p=>`<div class="item"><div class="txt"><b>${esc(p.name)}</b><span>${esc(p.pos)} · ${score(p.id,S).nW} workouts counted</span></div>
+        <div class="acts"><button class="btn small" id="pick-${p.id}" data-a="pick" data-id="${p.id}" aria-label="Select ${esc(p.name)}">Select</button></div></div>`).join(''):'<div class="empty">Everyone has been recognized recently.</div>'}</div></section>
+    <section><h2>Player of the game</h2>
+      <div class="list">${S.games.slice().sort((a,b)=>b.day-a.day).map(g=>`<div class="item"><div class="txt"><b>vs ${esc(g.opp)}</b><span>${dl(g.day)}</span></div>
+        <select id="pog-${g.id}" data-c="pog" data-id="${g.id}" aria-label="Player of the game vs ${esc(g.opp)}"><option value="">Not picked</option>${opts(active(S).map(p=>[p.id,p.name]),g.pog===null?'':g.pog)}</select></div>`).join('')}</div>
+      <div><button class="btn small" id="add-game" data-a="addgame">Add a game today</button></div></section>`;
+  }else if(tab==='leaders'){
+    const T=titles(S),cols=[{k:'name',label:'Player',txt:1,get:r=>r.p.name}].concat(T.map(t=>({k:t.key,label:t.name.replace(' leader',''),get:r=>t.vals.find(x=>x.p.id===r.p.id).v})));
+    body=`<section><h2>Ways to lead</h2><p class="sub">More than one path to being celebrated. Titles are recognition; MVP points are unchanged.</p>${titlesHtml(T,null)}</section>
+      <section><h2>Every title, every player</h2>${tableHtml('leaders',cols,active(S).map(p=>({p})),{sort:'mvp',dir:-1,rank:1})}</section>`;
+  }else if(tab==='standings'){
+    const cols=[{k:'name',label:'Player',txt:1,get:r=>r.p.name},{k:'work',label:'Work',get:r=>r.s.workouts},{k:'pog',label:'POG',get:r=>r.s.pog},
+      {k:'culture',label:'Culture',get:r=>r.s.culture,html:r=>r.s.culture+(r.s.held?` <span class="held">(${r.s.held} held)</span>`:'')},{k:'total',label:'Total',get:r=>r.s.total}];
+    body=`<section><h2>Season MVP race</h2>${tableHtml('standings',cols,standings(S),{sort:'total',dir:-1})}
+      <p class="sub">"Held" is culture points over the ${S.rules.capPct}% cap. They come back as the player logs more workouts.</p></section>`;
+  }else if(tab==='report'){
+    const D=reportData(),cols=[{k:'name',label:'Player',txt:1,get:r=>r.p.name},{k:'w',label:'Workouts',get:r=>r.s.nW},{k:'pog',label:'POG',get:r=>r.s.nP},{k:'c',label:'Culture',get:r=>r.s.nC},{k:'pts',label:'Points',get:r=>r.s.total},{k:'track',label:'Track',txt:1,get:r=>r.trackText}];
+    const top=leaders(D.T[1].vals,3);
+    body=`<section><h2>Report</h2>
+      <div class="seg" role="group" aria-label="Report period" style="grid-template-columns:repeat(2,1fr)"><button id="rep-week" data-a="repmode" data-v="week" aria-pressed="${D.m.mode==='week'}">Weekly</button><button id="rep-month" data-a="repmode" data-v="month" aria-pressed="${D.m.mode==='month'}">Monthly</button></div>
+      <div class="row" style="justify-content:space-between"><button class="btn small" id="rep-prev" data-a="repoff" data-v="-1">Previous</button><b id="rep-label">${esc(D.label)}</b><button class="btn small" id="rep-next" data-a="repoff" data-v="1"${D.m.off>=0?' disabled':''}>Next</button></div></section>
+    <section><h2>Top effort</h2><div class="list">${top.length?top.map(x=>`<div class="item"><div class="rank">${x.rank}</div><div class="txt"><b>${esc(x.p.name)}</b></div><div class="pts">${x.v}</div></div>`).join(''):'<div class="empty">No workouts counted in this period.</div>'}</div>
+      <p class="sub">${S.rules.reward?'Top effort earns: '+esc(S.rules.reward):'No reward set yet. Add one under Rules.'}</p></section>
+    <section><h2>Leaders this period</h2>${titlesHtml(D.T,null)}</section>
+    <section><h2>By player</h2>${tableHtml('report',cols,D.rows,{sort:'pts',dir:-1})}
+      <p class="sub">Period points are shown without the culture cap; the cap applies to the season total.</p></section>
+    <section><h2>Not recognized this period</h2><p class="sub">${D.nr.length?esc(D.nr.map(p=>p.name).join(', ')):'Everyone received a culture point.'}</p>
+      <div class="tools"><button class="btn primary small" id="rep-copy" data-a="repcopy">Copy report</button></div></section>`;
+  }else if(tab==='scout'){
+    const cur=scoutPid(),rows=active(S).map(p=>({p,sc:scouting(S,p)})),g=k=>r=>r.sc.tools.find(t=>t.k===k).g;
+    const cols=[{k:'name',label:'Player',txt:1,get:r=>r.p.name},{k:'overall',label:'Overall',get:r=>r.sc.overall}].concat(TOOLS.map(t=>({k:t.k,label:t.name,get:g(t.k)})));
+    body=`<section><h2>Scouting reports</h2><p class="sub">Effort grades on the 20 to 80 scale, from what's already logged. Each grade is measured against a fixed target, not against teammates, so everyone can grade high. They don't change points or the MVP race.</p>
+      ${tableHtml('scout',cols,rows,{sort:'overall',dir:-1})}</section>
+    <section><h2>Player card</h2>${cur<0?'<div class="empty">No players on the roster yet.</div>':`<div class="row"><select id="scout-p" data-c="scoutp" aria-label="Player card to show">${opts(active(S).map(p=>[p.id,p.name]),cur)}</select>
+      <button class="btn small" id="scout-copy" data-a="scoutcopy">Copy card</button></div>${scoutCardHtml(P(cur))}`}
+      <p class="sub">Players and parents see only their own card. Set the lowest grade a card can show under Rules.</p></section>`;
+  }else if(tab==='roster'){
+    const cols=[{k:'name',label:'Player',txt:1,get:r=>r.p.name},{k:'num',label:'#',get:r=>r.p.num},{k:'pos',label:'Pos',txt:1,get:r=>r.p.pos},
+      {k:'track',label:'Track',txt:1,get:r=>trackOf(S,r.p).name,html:r=>`<select id="tr-${r.p.id}" data-c="ptrack" data-id="${r.p.id}" aria-label="Track for ${esc(r.p.name)}">${trackOpts(trackOf(S,r.p).id)}</select>`},
+      {k:'adult',label:'Parent',txt:1,get:r=>r.p.adult},{k:'second',label:'Second adult',txt:1,get:r=>r.p.second||''},{k:'pts',label:'Points',get:r=>r.s.total},
+      {k:'edit',label:'',nosort:1,noexport:1,get:()=>'',html:r=>`<button class="btn small" id="edit-${r.p.id}" data-a="edit" data-id="${r.p.id}" aria-label="Edit ${esc(r.p.name)}">Edit</button>`}];
+    const gone=S.players.filter(p=>!p.active),e=EDIT,ep=e&&e.draft?e.draft:e&&e.id!=null?P(e.id):{name:'',num:'',pos:'',adult:'',second:'',track:S.tracks[0].id};
+    body=`<section><h2>Roster</h2><p class="sub">${plural(active(S).length,'player')}. Sort by any value; use Columns to show less.</p>
+      ${e?`<div class="form" id="player-form"><label>Name<input type="text" id="f-name" maxlength="40" value="${esc(ep.name)}"></label><label>Number<input type="number" inputmode="numeric" id="f-num" min="0" max="99" value="${esc(ep.num)}"></label>
+        <label>Position<input type="text" id="f-pos" maxlength="6" value="${esc(ep.pos)}"></label><label>Track<select id="f-track">${trackOpts(ep.track)}</select></label>
+        <label>Parent<input type="text" id="f-adult" maxlength="40" value="${esc(ep.adult)}"></label><label>Second adult<input type="text" id="f-second" maxlength="40" value="${esc(ep.second||'')}"></label>
+        <div class="row wide"><button class="btn primary small" id="f-save" data-a="psave">${e.id!=null?'Save':'Add player'}</button><button class="btn small" id="f-cancel" data-a="pcancel">Cancel</button>${e.id!=null?`<button class="btn small danger" id="f-remove" data-a="premove">Remove from roster</button>`:''}</div></div>`
+        :`<div class="tools"><button class="btn small primary" id="add-player" data-a="padd">Add a player</button></div>`}
+      ${tableHtml('roster',cols,standings(S),{sort:'num',dir:1})}
+      <div class="row"><select id="all-track" aria-label="Track for everyone">${trackOpts()}</select><button class="btn small" id="all-track-go" data-a="alltrack">Set for everyone</button></div>
+      ${gone.length?`<div class="list">${gone.map(p=>`<div class="item"><div class="txt"><b>${esc(p.name)}</b><span>Removed. History is kept.</span></div><div class="acts"><button class="btn small" id="restore-${p.id}" data-a="restore" data-id="${p.id}" aria-label="Restore ${esc(p.name)}">Restore</button></div></div>`).join('')}</div>`:''}</section>
+    <section><h2>Import or export the roster</h2><p class="sub">Rows match players by jersey number: a match updates that player, a new number adds one. Players missing from the file are left alone.</p>
+      ${importHtml('roster')}${templateHtml('roster',rosterRows(S).slice(0,3))}
+      <div class="tools"><button class="btn small" id="roster-copy" data-a="rostercopy">Copy roster</button>${DL?'<button class="btn small" id="roster-dl" data-a="rosterdl">Download roster CSV</button>':''}</div></section>
+    <section><h2>Tracks</h2><p class="sub">A track is a weekly plan: how many of each workout type to do. Off-track workouts still earn the same points.</p>
+      ${S.tracks.map(t=>`<div class="track"><div class="row"><input type="text" id="tn-${t.id}" data-c="tname" data-id="${t.id}" maxlength="24" value="${esc(t.name)}" aria-label="Name of the ${esc(t.name)} track" style="flex:1 1 140px">
+        <span class="sub">${plural(active(S).filter(p=>trackOf(S,p).id===t.id).length,'player')}</span>${S.tracks.length>1?`<button class="btn small danger" id="tdel-${t.id}" data-a="tdel" data-id="${t.id}" aria-label="Remove the ${esc(t.name)} track">Remove</button>`:''}</div>
+        <div class="nums"><label>Any type<input type="number" inputmode="numeric" min="0" max="14" id="ta-${t.id}" data-c="tany" data-id="${t.id}" value="${t.any||0}" aria-label="${esc(t.name)}: any type, per week"></label>
+        ${CATS.map((c,i)=>`<label>${c}<input type="number" inputmode="numeric" min="0" max="14" id="tc-${t.id}-${i}" data-c="tper" data-id="${t.id}" data-k="${c}" value="${t.per[c]||0}" aria-label="${esc(t.name)}: ${c}, per week"></label>`).join('')}</div></div>`).join('')}
+      <div><button class="btn small" id="add-track" data-a="tadd">Add a track</button></div></section>`;
+  }else{
+    const R=[['workoutPts','Workout','points each'],['pogPts','Player of the game','points each'],['culturePts','Culture point','points each'],
+      ['windowHours','Auto-approve window','hours before an unconfirmed workout counts'],['weeklyBudget','Culture budget','awards the coach can give per week'],
+      ['capPct','Culture cap','most of a player\'s total that can be culture, in %'],['nudgeDays','Recognition reminder','days without a culture point'],
+      ['maxPerDay','Workouts per day','most that count per player per day'],['backDays','Import can go back','days before today a spreadsheet row may be dated']];
+    const SR=[['gradeFloor','Lowest grade','floor for any grade on a card, 20 to 80'],['gradeCeil','Highest grade','ceiling for any grade on a card, 20 to 80'],
+      ['scoutStreak','Consistency target','streak in days that grades 60'],['scoutPlanPct','Plan target','% of weeks with the track finished that grades 60'],
+      ['scoutTeam','Teammate target','culture awards or nominations every 4 weeks that grade 60']];
+    const ruleRow=([k,t,d])=>`<div class="rule"><label for="rule-${k}">${t}<span>${d}</span></label><input type="number" inputmode="numeric" min="0" id="rule-${k}" data-c="rule" data-k="${k}" value="${S.rules[k]}"></div>`;
+    body=`<section><h2>Season and weeks</h2>
+      <div class="rules"><div class="rule"><label for="season-start">Season starts<span>Today in this demo is ${esc(dl(S.now))}</span></label><input type="date" id="season-start" data-c="start" value="${esc(S.start)}"></div>
+      <div class="rule"><label for="week-start">Week starts on<span>The culture budget resets on this day</span></label><select id="week-start" data-c="weekstart">${opts([[1,'Monday'],[0,'Sunday']],S.rules.weekStart)}</select></div>
+      <div class="rule"><label for="week-name">Weeks are named by<span>${esc(weekLabel(S,weekRange(S,S.now)))}</span></label><select id="week-name" data-c="weekname">${opts([['start','First day'],['end','Last day']],S.rules.weekName)}</select></div></div>
+      <p class="sub">The demo stores days since the season start, so changing the date moves the example history with it. In the real app each workout keeps its own date.</p></section>
+    <section><h2>Points and limits</h2><p class="sub">Change any number and the standings recalculate.</p>
+      <div class="rules">${R.map(ruleRow).join('')}
+      <div class="rule"><label for="rule-reward">Top effort reward<span>Shown to players and on the report</span></label><input type="text" id="rule-reward" data-c="reward" maxlength="60" value="${esc(S.rules.reward)}" placeholder="Not set"></div>
+      <div class="rule locked"><label>Video proof from players<span>Off. Only available for 15u and up.</span></label><span class="pill open">Locked</span></div></div>
+      <div><button class="btn small" id="rules-default" data-a="rulesdefault">Back to starting values</button></div></section>
+    <section><h2>Scouting report</h2><p class="sub">Each grade is 60 when a player hits its target, 50 at three quarters of it, and 80 at one and a half times it. Work rate uses each player's track, set under Roster. Change a number and every card recalculates.</p>
+      <div class="rules">${SR.map(ruleRow).join('')}</div></section>
+    <section><h2>Culture types</h2><p class="sub">Each type gets its own title on the Leaders board. Renaming keeps past awards; removing moves them to Other.</p>
+      <div class="rules">${S.types.map((t,i)=>`<div class="rule"><input type="text" id="type-${i}" data-c="typename" data-i="${i}" maxlength="24" value="${esc(t)}" aria-label="Culture type ${i+1}"><button class="btn small danger" id="type-del-${i}" data-a="typedel" data-i="${i}" aria-label="Remove the ${esc(t)} type">Remove</button></div>`).join('')}
+      <div class="rule"><input type="text" id="type-new" maxlength="24" placeholder="New type, such as Leadership" aria-label="New culture type"><button class="btn small" id="type-add" data-a="typeadd">Add</button></div></div></section>`;
+  }
+  return body;
+}
+
+/* ---------- render ---------- */
+const TABS=[['inbox','Inbox'],['award','Award'],['leaders','Leaders'],['report','Report'],['scout','Scouting'],['standings','Standings'],['roster','Roster'],['rules','Rules']],NAV_MAIN=4;
+function navHtml(){ // the first four sit in the bottom bar on a phone; the rest open from More
+  const b=([k,t])=>`<button id="tab-${k}" data-a="tab" data-v="${k}" aria-current="${S.ui.tab===k?'page':'false'}">${t}</button>`;
+  const inMore=TABS.slice(NAV_MAIN).some(([k])=>k===S.ui.tab);
+  return `<div class="nav-more" id="nav-more"${NAVOPEN?'':' data-closed'}>${TABS.slice(NAV_MAIN).map(b).join('')}</div>
+    <div class="nav-main">${TABS.slice(0,NAV_MAIN).map(b).join('')}<button id="tab-more" data-a="more" class="${inMore?'on':''}" aria-expanded="${NAVOPEN}" aria-controls="nav-more">More</button></div>`}
+function render(){
+  const A=active(S);
+  if(A.length){if(!P(S.ui.player).active)S.ui.player=A[0].id;if(!P(S.ui.fam).active)S.ui.fam=A[0].id}
+  $('clock').innerHTML=`${esc(dl(S.now))}<small>${esc(weekLabel(S,weekRange(S,S.now)))}</small>`;
+  $('prev-day').disabled=S.now<=0;
+  for(const r of ['coach','parent','player'])$('role-'+r).setAttribute('aria-pressed',S.ui.role===r);
+  $('who-row').hidden=S.ui.role==='coach';
+  if(S.ui.role==='parent')$('who').innerHTML=opts(A.map(p=>[p.id,(p.adult||'Parent')+' ('+first(p.id)+'\'s parent)']),S.ui.fam);
+  if(S.ui.role==='player')$('who').innerHTML=opts(A.map(p=>[p.id,p.name+' #'+p.num]),S.ui.player);
+  const coach=S.ui.role==='coach';
+  $('nav').hidden=!coach;$('nav-in').innerHTML=coach?navHtml():'';document.body.classList.toggle('has-nav',coach);
+  const m=S.ui.msg?`<div class="msg${S.ui.msgWarn?' warn':''}" role="status" data-overlay>${esc(S.ui.msg)}</div>`:'';
+  const box=COPYBOX?`<section><p class="sub">Copying isn't available here. Select the text below and copy it.</p><pre class="tpl" id="copybox">${esc(COPYBOX)}</pre></section>`:'';
+  $('app').innerHTML=m+box+(S.ui.role==='coach'?coachView():S.ui.role==='parent'?parentView():playerView());
+  $('reset').textContent=resetArmed?'Tap again to reset':'Reset demo';
+}
+function say(t,warn){S.ui.msg=t;S.ui.msgWarn=!!warn}
+function giveCulture(p,type,note,via){S.culture.push({id:S.nextId++,p,at:S.now,type,note:note||'',via})}
+function copyOut(text,what){const done=()=>{say(what+' copied.');render()};const fail=()=>{COPYBOX=text;say('');render()};
+  try{navigator.clipboard.writeText(text).then(done,fail)}catch(e){fail()}}
+async function saveFile(filename,data){if(!DL)return;
+  try{await DL.save({filename,data});say('Saved '+filename+'.')}
+  catch(e){const c=e&&e.code;if(c==='declined')say('Download cancelled.',true);else if(c==='rate_limited')say('One moment, then try again.',true);else{if(c!=='host_unavailable')DL=null;say('Downloading isn\'t available here. Use Copy instead.',true)}}
+  render()}
+const whoImports=()=>S.ui.role==='parent'?{role:'parent',pid:S.ui.fam}:{role:'coach'};
+function stageImport(kind,rows,file){PENDING={kind,file:file||'file',res:kind==='roster'?parseRoster(rows,S):parseWorkouts(rows,S,whoImports())};render()}
+function readFile(file,kind){
+  const bad=msg=>{PENDING={kind,file:file.name,res:{ok:[],skipped:[],error:msg}};render()},fr=new FileReader();
+  fr.onerror=()=>bad('That file could not be read.');
+  if(/\.xlsx?$/i.test(file.name)){
+    if(!window.XLSX)return bad('Excel files can\'t be read here. Save the sheet as CSV and try again.');
+    fr.onload=()=>{try{const wb=XLSX.read(new Uint8Array(fr.result),{type:'array'});stageImport(kind,XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''}),file.name)}catch(e){bad('That Excel file could not be read.')}};
+    fr.readAsArrayBuffer(file);
+  }else{fr.onload=()=>stageImport(kind,parseCsv(String(fr.result)),file.name);fr.readAsText(file)}
+}
+function commitImport(){
+  const X=PENDING;if(!X||!X.res.ok.length)return;
+  if(X.kind==='roster'){let add=0,upd=0;
+    for(const r of X.res.ok){const p=r.match!=null?byId(S,r.match):null;
+      if(p){p.name=r.name;if(r.pos)p.pos=r.pos;if(r.adult)p.adult=r.adult;p.second=r.second||p.second;if(r.track)p.track=r.track;p.active=true;upd++}
+      else{S.players.push({id:S.nextId++,name:r.name,num:r.num,pos:r.pos,adult:r.adult,second:r.second,track:r.track||S.tracks[0].id,active:true});add++}}
+    say(`Roster imported: ${add} added, ${upd} updated.`);
+  }else{const by=S.ui.role==='parent'?'parent':'coach';
+    for(const r of X.res.ok)S.workouts.push({id:S.nextId++,p:r.p,cat:r.cat,at:r.at,decision:'confirmed',by,src:'import'});
+    say(`${plural(X.res.ok.length,'workout')} imported and confirmed.`)}
+  PENDING=null;
+}
+
+/* ---------- actions ---------- */
+function act(a,d){
+  const id=Number(d.id);
+  if(a!=='reset')resetArmed=false;
+  if(a==='tcopy'){copyOut(toCsv(tableRows(d.t)).replace(/,/g,'\t'),'Table');return}
+  if(a==='tcsv'){saveFile(d.t+'.csv',toCsv(tableRows(d.t)));return}
+  if(a==='repcopy'){copyOut(reportText(),'Report');return}
+  if(a==='scoutcopy'){const pid=scoutPid();if(pid>=0)copyOut(scoutText(P(pid)),'Card');return}
+  if(a==='rostercopy'){copyOut(toCsv(rosterRows(S)),'Roster');return}
+  if(a==='rosterdl'){saveFile('roster.csv',toCsv(rosterRows(S)));return}
+  if(a==='tplcopy'){copyOut(toCsv(TPL[d.k]()),'Template');return}
+  if(a==='tpldl'){saveFile(d.k==='roster'?'roster-template.csv':'workout-template.csv',toCsv(TPL[d.k]()));return}
+  say('');COPYBOX='';
+  if(a!=='more')NAVOPEN=false;
+  if(a==='role'){S.ui.role=d.v;PENDING=null;EDIT=null}
+  else if(a==='tab'){S.ui.tab=d.v;PENDING=null;EDIT=null;OPENCOLS=''}
+  else if(a==='more')NAVOPEN=!NAVOPEN;
+  else if(a==='cat')S.ui.cat=d.v;
+  else if(a==='nextday'){S.now++;say('It is now '+dl(S.now)+'.')}
+  else if(a==='prevday'){if(S.now>0){S.now--;say('Back to '+dl(S.now)+'. Anything logged after today still shows.',true)}}
+  else if(a==='log'){S.workouts.push({id:S.nextId++,p:S.ui.player,cat:S.ui.cat,at:S.now,decision:null,by:null});say('Workout logged. It counts once an adult confirms, or after '+S.rules.windowHours+' hours.')}
+  else if(a==='confirm'||a==='coachconfirm'){const w=S.workouts.find(w=>w.id===id);if(w){w.decision='confirmed';w.by=a==='confirm'?'parent':'coach';say('Confirmed. '+first(w.p)+'\'s points are in.')}}
+  else if(a==='veto'){const w=S.workouts.find(w=>w.id===id);if(w){w.decision='vetoed';w.by='parent';say('Vetoed. That workout will not count.',true)}}
+  else if(a==='nominate'){const to=Number($('nom-to').value),t=$('nom-type').value;
+    if(t){S.noms.push({id:S.nextId++,from:S.ui.player,to,type:t,at:S.now,state:'open'});say('Nomination sent to Coach.')}}
+  else if(a==='nomok'){const n=S.noms.find(n=>n.id===id);if(n&&budgetLeft(S)){n.state='approved';giveCulture(n.to,S.types.includes(n.type)?n.type:'Other',S.types.includes(n.type)?'':n.type,'nomination');say(first(n.to)+' gets '+S.rules.culturePts+' culture points.')}}
+  else if(a==='nomno'){const n=S.noms.find(n=>n.id===id);if(n){n.state='dismissed';say('Nomination dismissed.')}}
+  else if(a==='pick'){S.ui.awardTo=id;say(P(id).name+' is selected above.')}
+  else if(a==='award'){if(budgetLeft(S)){const p=Number($('award-player').value),custom=$('award-custom').value.trim(),t=custom?'Other':$('award-type').value;
+    if(t){giveCulture(p,t,custom,'coach');S.ui.awardTo=p;say(first(p)+' gets '+S.rules.culturePts+' culture points for '+(custom||t).toLowerCase()+'.')}}}
+  else if(a==='addgame'){S.games.push({id:S.nextId++,day:S.now,opp:'Game '+(S.games.length+1),pog:null});say('Game added. Pick the player of the game.')}
+  else if(a==='rulesdefault'){S.rules={...DEFAULT_RULES};say('Rules are back to the starting values.')}
+  else if(a==='sort'){const st=S.ui.tables[d.t];if(st){if(st.sort===d.k)st.dir=-st.dir;else{st.sort=d.k;st.dir=firstDir(d.k)}}}
+  else if(a==='pickt'){const st=S.ui.tables[d.t];if(st){st.sort=d.k;st.dir=-1}}
+  else if(a==='sortdir'){const st=S.ui.tables[d.t];if(st)st.dir=-st.dir}
+  else if(a==='cols')OPENCOLS=OPENCOLS===d.t?'':d.t;
+  else if(a==='colt'){const st=S.ui.tables[d.t];if(st){const i=st.hide.indexOf(d.k);if(i>=0)st.hide.splice(i,1);else st.hide.push(d.k)}}
+  else if(a==='repmode'){S.ui.report={mode:d.v,off:0}}
+  else if(a==='repoff'){S.ui.report.off=Math.min(0,S.ui.report.off+Number(d.v))}
+  else if(a==='importgo')commitImport();
+  else if(a==='importcancel')PENDING=null;
+  else if(a==='padd')EDIT={id:null};
+  else if(a==='edit')EDIT={id};
+  else if(a==='pcancel')EDIT=null;
+  else if(a==='psave'){const name=$('f-name').value.trim(),num=parseInt($('f-num').value,10),cur=EDIT.id;
+    // keep what was typed if the save is refused
+    EDIT.draft={name,num:$('f-num').value,pos:$('f-pos').value.trim(),adult:$('f-adult').value.trim(),second:$('f-second').value.trim(),track:Number($('f-track').value)};
+    if(!name)say('A player needs a name.',true);
+    else if(isNaN(num))say('A player needs a jersey number.',true);
+    else if(active(S).some(p=>p.num===num&&p.id!==cur))say('Number '+num+' is already taken.',true);
+    else{const v={name,num,pos:$('f-pos').value.trim(),adult:$('f-adult').value.trim(),second:$('f-second').value.trim(),track:Number($('f-track').value)};
+      if(cur!=null)Object.assign(byId(S,cur),v);else S.players.push({id:S.nextId++,active:true,...v});
+      say(name+(cur!=null?' updated.':' added to the roster.'));EDIT=null}}
+  else if(a==='premove'){const p=byId(S,EDIT.id);if(p){p.active=false;say(p.name+' removed. Their history is kept and you can restore them below.',true)}EDIT=null}
+  else if(a==='restore'){const p=byId(S,id);if(p){if(active(S).some(x=>x.num===p.num))say('Number '+p.num+' is in use. Change it first.',true);else{p.active=true;say(p.name+' is back on the roster.')}}}
+  else if(a==='alltrack'){const t=Number($('all-track').value);for(const p of active(S))p.track=t;say('Everyone is on the '+trackOf(S,active(S)[0]||{track:t}).name+' track.')}
+  else if(a==='tadd'){S.tracks.push({id:S.nextId++,name:'New track',any:3,per:{}});say('Track added. Name it and set its weekly numbers.')}
+  else if(a==='tdel'){if(S.tracks.length>1){const t=S.tracks.find(t=>t.id===id);S.tracks=S.tracks.filter(t=>t.id!==id);for(const p of S.players)if(p.track===id)p.track=S.tracks[0].id;say((t?t.name:'Track')+' removed. Its players moved to '+S.tracks[0].name+'.',true)}}
+  else if(a==='typeadd'){const v=$('type-new').value.trim();if(!v)say('Type a name first.',true);else if(v.toLowerCase()==='other'||S.types.some(t=>t.toLowerCase()===v.toLowerCase()))say('That type already exists.',true);else{S.types.push(v);say(v+' added. It now has its own title.')}}
+  else if(a==='typedel'){const t=S.types[Number(d.i)];if(t){S.types.splice(Number(d.i),1);for(const c of S.culture)if(c.type===t){c.type='Other';c.note=c.note||t}say(t+' removed. Past awards moved to Other.',true)}}
+  else if(a==='reset'){if(resetArmed){resetArmed=false;EDIT=null;PENDING=null;S=seed();say('Demo reset to the example season.')}else resetArmed=true}
+  save();render();
+  if(a==='tab')window.scrollTo(0,0);
+  if(a==='pick')$('award-player').scrollIntoView({block:'center'});
+  if(a==='edit'||a==='padd')$('player-form').scrollIntoView({block:'center'});
+}
+function change(c,t){
+  resetArmed=false;say('');const id=Number(t.dataset.id);
+  NAVOPEN=false;
+  if(c==='who'){PENDING=null;if(S.ui.role==='parent')S.ui.fam=Number(t.value);else S.ui.player=Number(t.value)}
+  else if(c==='scoutp')S.ui.scout=Number(t.value);
+  else if(c==='sortby'){const st=S.ui.tables[t.dataset.t];if(st){st.sort=t.value;st.dir=firstDir(t.value)}}
+  else if(c==='pog'){const g=S.games.find(g=>g.id===id);if(g){g.pog=t.value===''?null:Number(t.value);say(g.pog===null?'Player of the game cleared.':first(g.pog)+' is player of the game.')}}
+  else if(c==='rule'){let v=Math.max(0,Math.floor(Number(t.value)||0));if(t.dataset.k==='capPct')v=Math.min(100,v);const k=t.dataset.k;
+    if(k==='gradeFloor'||k==='gradeCeil')v=Math.min(80,Math.max(20,v));
+    if(k==='scoutStreak'||k==='scoutTeam')v=Math.max(1,v);
+    if(k==='scoutPlanPct')v=Math.min(100,Math.max(1,v));
+    S.rules[k]=v;
+    // floor and ceiling never cross: moving one pushes the other
+    if(k==='gradeFloor'&&S.rules.gradeCeil<v)S.rules.gradeCeil=v;
+    if(k==='gradeCeil'&&S.rules.gradeFloor>v)S.rules.gradeFloor=v;
+    if(k.startsWith('grade')||k.startsWith('scout'))say('Scouting grades updated.')}
+  else if(c==='reward')S.rules.reward=t.value.trim();
+  else if(c==='start'){if(/^\d{4}-\d{2}-\d{2}$/.test(t.value)){S.start=t.value;say('Season now starts '+dl(0)+'. Today in the demo is '+dl(S.now)+'.')}}
+  else if(c==='weekstart')S.rules.weekStart=Number(t.value);
+  else if(c==='weekname')S.rules.weekName=t.value;
+  else if(c==='ptrack'){const p=byId(S,id);if(p){p.track=Number(t.value);say(p.name+' is on the '+trackOf(S,p).name+' track.')}}
+  else if(c==='tname'){const tr=S.tracks.find(x=>x.id===id);if(tr&&t.value.trim())tr.name=t.value.trim()}
+  else if(c==='tany'){const tr=S.tracks.find(x=>x.id===id);if(tr)tr.any=Math.max(0,Math.floor(Number(t.value)||0))}
+  else if(c==='tper'){const tr=S.tracks.find(x=>x.id===id);if(tr){const v=Math.max(0,Math.floor(Number(t.value)||0));if(v)tr.per[t.dataset.k]=v;else delete tr.per[t.dataset.k]}}
+  else if(c==='typename'){const i=Number(t.dataset.i),old=S.types[i],v=t.value.trim();
+    if(v&&v!==old&&v.toLowerCase()!=='other'&&!S.types.some((x,j)=>j!==i&&x.toLowerCase()===v.toLowerCase())){S.types[i]=v;for(const x of S.culture)if(x.type===old)x.type=v;for(const n of S.noms)if(n.type===old)n.type=v;say(old+' is now '+v+'.')}}
+  save();render();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(b&&!b.disabled)act(b.dataset.a,b.dataset)});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.dataset&&t.dataset.file){if(t.files&&t.files[0])readFile(t.files[0],t.dataset.file)}
+  else if(t.dataset&&t.dataset.c)change(t.dataset.c,t)});
+window.__demo={stageImport,get state(){return S}};
+WIDE.addEventListener('change',render);
+render();
+if(window.claude&&typeof window.claude.use==='function')window.claude.use('downloads').then(d=>{if(d){DL=d;render()}},()=>{});
+}
+</script>
+
+</body></html>
