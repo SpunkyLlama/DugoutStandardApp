@@ -1,6 +1,6 @@
 # Dugout Standard App
 
-Source for **Coach Rob's MVPs**, a youth team effort tracker (workouts, culture points, MVP race, effort scouting reports). Single self-contained page: `index.html`.
+Source for **Dugout Standard**, a youth team effort tracker (workouts, culture points, MVP race, effort scouting reports). Single self-contained page: `index.html`.
 
 ## Environments
 

@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Coach Rob's MVPs - It's in the Culture</title>
+<title>Dugout Standard - It's in the Culture</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -208,7 +208,7 @@ a{color:var(--accent)}
 
 <header class="top" data-frame><div class="wrap">
   <div class="bar-top">
-    <div class="brand">Coach Rob's MVPs<small>It's in the culture</small></div>
+    <div class="brand">Dugout Standard<small>It's in the culture</small></div>
     <div class="clock"><button class="btn small" id="prev-day" data-a="prevday" aria-label="Back one day">Back</button><span id="clock"></span><button class="btn small" id="next-day" data-a="nextday" aria-label="Forward one day">Next</button></div>
   </div>
 </div></header>
@@ -623,7 +623,7 @@ function reportData(){
   return {m,r,label,rows,T:titles(S,r),nr:notRecognized(S,r)};
 }
 function reportText(){
-  const D=reportData(),L=["Coach Rob's MVPs: "+D.label,''];
+  const D=reportData(),L=["Dugout Standard: "+D.label,''];
   for(const t of D.T){const top=leaders(t.vals,3);if(top.length)L.push(t.name+': '+top.map(x=>x.p.name+' ('+x.v+')').join(', '))}
   if(D.m.mode==='week'){const done=D.rows.filter(x=>x.done);if(done.length)L.push('Completed their track: '+done.map(x=>x.p.name).join(', '))}
   if(S.rules.reward)L.push('Top effort earns: '+S.rules.reward);
